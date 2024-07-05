@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face-Tracker Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+        }
+
+        #sidebar {
+            width: 80px;
+            background: #343a40;
+            color: #adb5bd;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            transition: width 0.3s;
+            position: fixed;
+        }
+
+        #sidebar:hover {
+            width: 150px;
+        }
+
+        #sidebar .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        #sidebar ul li {
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul li a {
+            color: #d1d8e0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease-in-out;
+        }
+
+        #sidebar ul li a:hover {
+            color: #ffd700;
+        }
+
+        #content {
+            flex: 1;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+            margin-left: 80px;
+        }
+
+        .navbar {
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+        }
+
+        .navbar .logout {
+            font-size: 18px;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .content-header {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #dashboard-cards {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card i {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        .dashboard-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .dashboard-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .dashboard-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom right, #007bff, #00cccc);
+            z-index: -1;
+            transition: transform 0.5s;
+            transform: scaleY(0);
+            transform-origin: bottom;
+        }
+
+        .dashboard-card:hover:before {
+            transform: scaleY(1);
+        }
+
+        .dashboard-graph {
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="logo">
+        <i class="fas fa-robot"></i>
+    </div>
+    <ul>
+        <li><a href="/start" title="Start-Attendance"><i class="fas fa-play"></i></a></li>
+       <li><a href="/attendance" title="Attendance"><i class="fas fa-user-check"></i></a></li>
+         <li><a href="{{ url_for('employes_list') }}" title="Employees"><i class="fas fa-users"></i></a></li>
+         <li><a href="/Add-Emp" title="Scan"><i class="fas fa-save"></i></a></li>
+        <li><a href="/Archive" title="Archive"><i class="fas fa-archive"></i></a></li>
+       <li><a href="{{ url_for('CameraList') }}" title="Cameras"><i class="fas fa-video"></i></a></li>
+        <li><a href="/login" title="logout"><i class="fas fa-sign-out-alt"></i></a></li>
+    </ul>
+    <div class="logout" onclick="logout()" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+    </div>
+</div>
+
+<div id="content">
+    <div class="navbar">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            Face-Tracker
+        </div>
+        <div class="logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+    </div>
+
+    <div class="content-header">
+        <h2></h2>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div id="dashboard-cards">
+    <div class="dashboard-card">
+        <i class="fas fa-users"></i>
+        <h3>Total Employees</h3>
+        <p id="personCount">{{ totalreg }}</p>
+
+    </div>
+
+    <div class="dashboard-card">
+        <i class="fas fa-user-check"></i>
+        <h3> Attendance Employees </h3>
+        <p id="vehicleCount">{{ unique_attendees }}</p>
+    </div>
+
+    <div class="dashboard-card">
+        <i class="fas fa-user-times"></i>
+        <h3>Absence Employees</h3>
+        <p id="cameraCount">  {{ Absence_Emp }} </p>
+    </div>
+        <!-- Add this code block to display line traffic -->
+<div class="dashboard-card">
+   <i class="fas fa-building"></i>
+    <h3>Department Capacity </h3>
+    <p id="lineTrafficCapacity">{{ current_capacity }}%</p>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: {{ line_traffic_capacity }}%;" aria-valuenow="{{ line_traffic_capacity }}" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+</div>
+</div>
+
+
+
+
+
+
+
+    <!-- Dashboard Graph -->
+    <div class="dashboard-graph">
+        <!-- Add your static graph content here -->
+        <h3>Total Count Graph</h3>
+        <canvas id="totalGraph" width="400" height="100"></canvas>
+    </div>
+
+    <!-- Add your remaining dashboard content here... -->
+</div>
+
+<script>
+    function logout() {
+        // Implement your logout logic here
+        window.location.href = '/Dash';
+    }
+
+
+
+
+
+    document.getElementById('personCount').innerText = {{ totalreg }} ;
+    document.getElementById('vehicleCount').innerText = {{ unique_attendees }} ;
+    document.getElementById('cameraCount').innerText =  {{ Absence_Emp }} ;
+    document.getElementById('lineTrafficCapacity').innerText = Math.round({{ current_capacity }}) + '%';
+
+    // Example: Create a static graph (you'll need a charting library for dynamic data)
+    var ctx = document.getElementById('totalGraph').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Employess ', 'Attendance Employees', 'Absence Employees'],
+            datasets: [{
+                label: 'Total Count',
+                data: [ {{ totalreg }} , {{ unique_attendees }} ,  {{ Absence_Emp }} ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

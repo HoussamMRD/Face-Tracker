@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Dashboard-EditCamaera</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+        }
+
+        #sidebar {
+            width: 80px;
+            background: #343a40;
+            color: #adb5bd;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            transition: width 0.3s;
+            position: fixed;
+        }
+
+        #sidebar:hover {
+            width: 150px;
+        }
+
+        #sidebar .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        #sidebar ul li {
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul li a {
+            color: #d1d8e0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease-in-out;
+        }
+
+        #sidebar ul li a:hover {
+            color: #ffd700;
+        }
+
+        #content {
+            flex: 1;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+            margin-left: 80px;
+        }
+
+        .navbar {
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .logo i {
+            font-size: 36px;
+            margin-right: 10px;
+            color: #333;
+        }
+
+        .navbar .logout {
+            font-size: 18px;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .content-header {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: auto;
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 5px;
+
+
+        }
+
+        input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 25px;
+        }
+
+        button {
+            padding: 8px 12px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        button i {
+            margin-right: 5px;
+        }
+
+        button.save {
+            background-color: #ffc107; /* Yellow color */
+            color: #333;
+            transition: background-color 0.3s ease-in-out;
+            margin-right: 195px;
+        }
+
+        button.save:hover {
+            background-color: #ffca2c; /* Darker yellow on hover */
+        }
+
+        button.back {
+            background-color: #28a745; /* Green color */
+            color: #fff;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button.back:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #28a745;
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        a:hover {
+            color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+        </div>
+        <ul>
+            <li><a href="/start" title="Start-Attendance"><i class="fas fa-play"></i></a></li>
+        <li><a href="/attendance" title="Attendance"><i class="fas fa-user-check"></i></a></li>
+        <li><a href="{{ url_for('employes_list') }}" title="Employees"><i class="fas fa-users"></i></a></li>
+       <li><a href="/Add-Emp" title="Scan"><i class="fas fa-save"></i></a></li>
+        <li><a href="/Archive" title="Archive"><i class="fas fa-archive"></i></a></li>
+        <li><a href="{{ url_for('CameraList') }}" title="Cameras"><i class="fas fa-video"></i></a></li>
+        <li><a href="/login" title="Logout"><i class="fas fa-sign-out-alt"></i></a></li>
+        </ul>
+<div class="logout" onclick="logout()" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+    </div>
+</div>
+
+<div id="content">
+    <div class="navbar">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            Face-Tracker
+        </div>
+        <div class="logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+    </div>
+        <div class="content-header">
+            <h2><i class="fas fa-camera"></i> Edit Camera</h2>
+        </div>
+
+        <form method="post" action="{{ url_for('CameraEdit' , id=camera.id    ) }}">
+
+            <label for="name"><i class="fas fa-camera"></i> Camera Name</label>
+            <input type="text" name="name" id="name"  value="{{ camera.name }}" required>
+
+            <label for="type"><i class="fas fa-bars"></i> Type</label>
+            <input type="text" name="type" id="type" value="{{ camera.type }}" required>
+
+            <label for="ref"><i class="fas fa-caret-square-down"></i> Ref </label>
+            <input type="text" id="ref" name="ref" value="{{ camera.ref }}" required>
+
+            <label for="department"><i class="fas fa-building"></i> Department </label>
+            <input type="text" name="department" id="department" value="{{ camera.department }}" required>
+
+
+
+            <button type="submit" class="save"><i class="fas fa-save"></i> Save</button>
+            <a href="{{ url_for('CameraList') }}" class="back"><i class="fas fa-chevron-left"></i> Back</a>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Include Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+        }
+
+        #sidebar {
+            width: 80px;
+            background: #343a40;
+            color: #adb5bd;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            transition: width 0.3s;
+            position: fixed;
+        }
+
+        #sidebar:hover {
+            width: 150px;
+        }
+
+        #sidebar .logo {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+        }
+
+        #sidebar ul li {
+            margin-bottom: 20px;
+        }
+
+        #sidebar ul li a {
+            color: #d1d8e0;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease-in-out;
+        }
+
+        #sidebar ul li a:hover {
+            color: #ffd700;
+        }
+
+        #content {
+            flex: 1;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s;
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+            margin-left: 80px;
+        }
+
+        .navbar {
+            background: #fff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #333;
+        }
+
+        .navbar .logout {
+            font-size: 18px;
+            color: #1a1a1a;
+            cursor: pointer;
+        }
+
+        .content-header {
+            margin-bottom: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: sans-serif;
+        }
+
+        .section-header {
+            background-color: white;
+            color: white;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 0;
+        }
+
+        .button-with-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin-top: 30px;
+        }
+
+
+
+        table {
+            border-radius: 20px;
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            background-color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .icon-cell {
+            width: 50px;
+        }
+
+            .search-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+
+        }
+
+        .search-bar {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 55px;
+            font-size: 15px;
+        }
+
+        .search-bar::placeholder {
+            color: #999;
+        }
+
+        .search-button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 55px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .search-button:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+
+<body>
+
+  <div id="sidebar">
+    <div class="logo">
+        <i class="fas fa-robot"></i>
+    </div>
+    <ul>
+        <li><a href="/start" title="Start-Attendance"><i class="fas fa-play"></i></a></li>
+        <li><a href="/attendance" title="Attendance"><i class="fas fa-user-check"></i></a></li>
+        <li><a href="{{ url_for('employes_list') }}" title="Employees"><i class="fas fa-users"></i></a></li>
+        <li><a href="/Add-Emp" title="Scan"><i class="fas fa-save"></i></a></li>
+        <li><a href="/Archive" title="Archive"><i class="fas fa-archive"></i></a></li>
+        <li><a href="{{ url_for('CameraList') }}" title="Cameras"><i class="fas fa-video"></i></a></li>
+        <li><a href="/login" title="Logout"><i class="fas fa-sign-out-alt"></i></a></li>
+    </ul>
+    <div class="logout" onclick="logout()" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+    </div>
+</div>
+
+<div id="content">
+    <div class="navbar">
+        <div class="logo">
+            <i class="fas fa-robot"></i>
+            Face-Tracker
+        </div>
+        <div class="logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+        </div>
+    </div>
+
+
+     <div class="content-header">
+            <h2> <i class="fas fa-user-check"></i> Today's Attendance <i class="fas fa-user-check"></i> </h2>
+        </div>
+
+    {% if mess %}
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+            <div class="col">
+                <p class="text-center text-danger">{{ mess }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="search-container">
+            <form method="GET" action="{{ url_for('attendance') }}">
+                <input type="text" name="search" class="search-bar" placeholder="Search by Name">
+                <button type="submit" class="search-button"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </div>
+
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-8 add-user-form">
+
+                <table>
+                    <thead>
+                        <tr>
+
+                            <th> <i class="fas fa-sort-numeric-down"></i> ID</th>
+                            <th> <i class="fas fa-bars"></i> Full-Name</th>
+                            <th> <i class="fas fa-clock"></i> Date & Time</th>
+                            <th> <i class="fas fa-cog"></i> </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if l %}
+                        {% for i in range(l-1, -1, -1) %}
+                        <tr>
+
+                            <td>{{ rolls[i] }}</td>
+                            <td>{{ names[i] }}</td>
+                            <td>{{ datetoday2 }} - {{ times[i] }}</td>
+                            <td class="actions">
+                           <a href="#" onclick="view(this)" data-id="{{ rolls[i] }}" data-name="{{ names[i] }}" data-time="{{ times[i] }}" data-date="{{ datetoday2 }}" data-toggle="modal" data-target="#employeeModal" title="View"><i class="fas fa-eye"></i></a>
+
+                        </td>
+
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+     <script>
+        function logout() {
+            // Implement your logout logic here
+            window.location.href = '/Dash';
+        }
+
+        function view(element) {
+    var id = element.getAttribute('data-id');
+    var name = element.getAttribute('data-name');
+    var date = element.getAttribute('data-date');
+    var time = element.getAttribute('data-time');
+
+    // Set the content in the modal
+    $('#empId').text(id);
+    $('#empName').text(name);
+    $('#empTime').text(date + ' - ' + time);
+    $('#empProfession').text('ai engineer');
+    $('#empEmail').text('mrdhoussam@gmail.com');
+    $('#empPhone').text('0620835143');
+    $('#empAddress').text('Marrakesh, CloudLink');
+    $('#empDateNaissance').text('2000-04-05');
+    $('#empDateEmbauche').text('2024-03-04');
+
+    // Show the modal
+    $('#employeeModal').modal('show');
+}
+
+    </script>
+
+    <!-- Employee Detail Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" role="dialog" aria-labelledby="employeeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="employeeModalLabel">Employee Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <p><strong>FullName:</strong> <span id="empName"></span></p>
+          <p><strong>Profession:</strong> <span id="empProfession"></span></p>
+            <p><strong>Email:</strong> <span id="empEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="empPhone"></span></p>
+                    <p><strong>Address:</strong> <span id="empAddress"></span></p>
+                    <p><strong>Date Naissance:</strong> <span id="empDateNaissance"></span></p>
+                        <p><strong>Date Embauche:</strong> <span id="empDateEmbauche"></span></p>
+                              <p><strong>Last Attendance:</strong> <span id="empTime"></span></p>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+    // Function to reload the page every 5 seconds
+    function reloadPage() {
+        location.reload();
+    }
+
+    // Call the reloadPage function every 5 seconds
+    setInterval(reloadPage, 5000);
+</script>
+
+
+
+ </body>
+</html>
